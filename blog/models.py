@@ -12,6 +12,9 @@ class Post(models.Model):
 
     class Meta:
         ordering = ['-publish']
+        indexes = [
+            models.Index(fields=['-publish']),#индексирование поля publish для ускорения выполнения запросов по этому полю
+        ]
 
 
     def __str__(self):
