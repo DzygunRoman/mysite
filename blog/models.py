@@ -1,15 +1,16 @@
 from django.db import models
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 
 class Post(models.Model):
 
-    class Status(models.TextChoices): #вложенный класс для создания поля status
+    class Status(models.TextChoices): #вложенный перечисляемый класс для создания поля status
         DRAFT = 'DF', 'Draft'
         PUBLISHED = 'PB', 'Published'
 
     title = models.CharField(max_length=250) #заголовок
     slug = models.SlugField(max_length=250) #слаг
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts') #созданние связи с встроенной таблицей User один ко многим
     body = models.TextField() #тело поста
     publish = models.DateTimeField(default=timezone.now) #время публикации
     created = models.DateTimeField(auto_now_add=True) #время создания
