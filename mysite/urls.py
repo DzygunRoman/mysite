@@ -20,3 +20,6 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+admin.site.site_header = "Панель администрирования" #меняем заголовок админ-панели на свой
+admin.site.index_title = "Мой блог" #меняем подзаголовок приложения в админ-панели
