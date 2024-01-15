@@ -18,6 +18,8 @@ class Post(models.Model):
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT) #поле статус\
 
     class Meta:
+        verbose_name = "Мой блог" #замена в админ-панели названия блога
+        verbose_name_plural = "Мой блог" #множественное число
         ordering = ['-publish']
         indexes = [
             models.Index(fields=['-publish']),#индексирование поля publish для ускорения выполнения запросов по этому полю
