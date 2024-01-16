@@ -2,6 +2,12 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+
+class PublishedManager(models.Manager): #менеджер для извлечения постов используя Post.published.all()
+    def get_queryset(self):
+        return super().get_queryset()\
+                      .filter(status=Post.Status.PUBLISHED)
+
 class Post(models.Model):
 
     class Status(models.TextChoices): #вложенный перечисляемый класс для создания поля status
