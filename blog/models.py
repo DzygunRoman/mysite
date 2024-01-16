@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class PublishedManager(models.Manager): #менеджер для извлечения постов используя Post.published.all()
     def get_queryset(self):
         return super().get_queryset()\
-                      .filter(status=Post.Status.PUBLISHED)
+                      .filter(status=Post.Status.PUBLISHED) #получаем посты со статусом published
 
 class Post(models.Model):
 
@@ -22,6 +22,8 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True) #время создания
     updated = models.DateTimeField(auto_now=True) #время изменения
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT) #поле статус\
+    objects = models.Manager() #менеджер применямый по умолчанию
+    published = PublishedManager() #конкретно-прикладной менеджер
 
     class Meta:
         verbose_name = "Мой блог" #замена в админ-панели категории блога
