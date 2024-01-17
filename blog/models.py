@@ -16,7 +16,7 @@ class Post(models.Model):
         PUBLISHED = 'PB', 'Published'
 
     title = models.CharField(max_length=250)  # заголовок
-    slug = models.SlugField(max_length=250)  # слаг
+    slug = models.SlugField(max_length=250, unique_for_date='publish')  # слаг уникальный для даты публикации
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='blog_posts')  # созданние связи с встроенной таблицей User один ко многим
     body = models.TextField()  # тело поста
