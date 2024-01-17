@@ -1,10 +1,15 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Post
 from django.http import Http404
-
+from django.core.paginator import Paginator
 
 def post_list(request): #представление извлечь все посты со статусом PUBLISHED
     posts = Post.published.all()
+    #Постраничная разбивка с 3 постами на страницу
+    paginator = Paginator(post_list, 3) #создаем экземпляр класса с числом объектов возвращаемых на страницу
+    page_number = request.GET.get('page', 1) #извлекаем номер страницы и сохраняем в page_number
+    posts = paginator.page(page_number) #получаем объекты для желаемой страницы и сохраняем в posts
+
     return render(request, 'blog/post/list.html', {'posts': posts})
 
 
