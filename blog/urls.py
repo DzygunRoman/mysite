@@ -1,11 +1,12 @@
 from django.urls import path
 from . import views
 
-
-app_name = 'blog'#определяем именное пространство приложения приложения
+app_name = 'blog'  # определяем именное пространство приложения приложения
 
 urlpatterns = [
     # представления поста
     path('', views.post_list, name='post_list'),
-    path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name='post_detail'),#<> - для захвата значений из url-адреса
+    path('<int:year>/<int:month>/<int:day>/<slug:post>/',
+         views.post_detail,
+         name='post_detail'),  # <> - для захвата значений из url-адреса
 ]
