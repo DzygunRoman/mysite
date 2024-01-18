@@ -1,4 +1,5 @@
 {% extends "blog/base.html" %}
+
 {% block title %}Share a post{% endblock %}
 
 {% block content %}
@@ -10,7 +11,7 @@
    </p>
 {% else %}
    <h1>Share "{{ post.title }}" by email</h1>
-   <form method="post">
+   <form method="post" novalidate>
        {{ form.as_p }}
        {% csrf_token %}
        <input type="submit" value="Send e-mail">

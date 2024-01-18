@@ -1,24 +1,27 @@
 from django.core.mail import send_mail
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .forms import EmailPostForm
+from django.views.decorators.http import require_POST
 
 
 def post_share(request, post_id):
     #извлечь пост по id
-    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)#функция сокращенного доступа
+    post = get_object_or_404(Post, id=post_id, \
+                             status=Post.Status.PUBLISHED)#функция сокращенного доступа
+
     sent = False
+
     if request.method == 'POST':
         #форма была передана на обработку
         form = EmailPostForm(request.POST)
         if form.is_valid():
             #поля формы успешно прошли валидацию
             cd = form.cleaned_data#извлечение данных из формы
-            post_url = request.build_absolute_url(  #отправить электронное письмо
-                post.get_absolute_url())
-            subject = f"{cd['name']} recomends you read " \
+            post_url = request.build_absolute_uri(post.get_absolute_url())#отправить электронное письмо
+            subject = f"{cd['name']} recommends you read " \
                       f"{post.title}"
             message = f"Read {post.title} at {post_url}\n\n" \
                       f"{cd['name']}\'s comments: {cd['comments']}"
@@ -26,7 +29,9 @@ def post_share(request, post_id):
             sent = True
     else:
         form = EmailPostForm()
-    return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
+    return render(request, 'blog/post/share.html', {'post': post,
+                                                                        'form': form,
+                                                                        'sent': sent})
 
 
 class PostListViews(ListView):
@@ -57,10 +62,10 @@ def post_list(request): #представление извлечь все пос
 def post_detail(request, year, month, day, post):#извлекаем пост с заданным cлагом и датой публикации
     post = get_object_or_404(Post,
                              status=Post.Status.PUBLISHED,
-                             slug=post
-                             # publish_year=year,
-                             # publish_month=month,
-                             # publish_day=day
+                             slug=post,
+                             publish__year=year,
+                             publish__month=month,
+                             publish__day=day
                              )
 
     return render(request,
