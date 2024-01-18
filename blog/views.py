@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Post
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def post_list(request): #представление извлечь все посты со статусом PUBLISHED
     post_list = Post.published.all()
@@ -9,6 +9,9 @@ def post_list(request): #представление извлечь все пос
     page_number = request.GET.get('page', 1) #извлекаем номер страницы и сохраняем в page_number
     try:
         posts = paginator.page(page_number) #получаем объекты для желаемой страницы и сохраняем в posts
+    except PageNotAnInteger:
+        # Если номер страницы не целое число то выдать первую страницу
+        posts = paginator.page(1)
     except EmptyPage:
         # Если номер страницы находится вне диапазона то выдать последнюю страницу
         posts = paginator.page(paginator.num_pages)
