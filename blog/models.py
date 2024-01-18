@@ -28,8 +28,8 @@ class Post(models.Model):
     published = PublishedManager()  # конкретно-прикладной менеджер
 
     class Meta:
-        verbose_name = "Мой блог"  # замена в админ-панели категории блога
-        verbose_name_plural = "Мой блог"  # множественное число категории
+        verbose_name = "Женщина"  # замена в админ-панели категории блога
+        verbose_name_plural = "Женщины"  # множественное число категории
         ordering = ['-publish']
         indexes = [
             models.Index(fields=['-publish']),
