@@ -1,6 +1,17 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Post
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic import ListView
+
+
+class PostListViews(ListView):
+    #Альтернативное представление списка постов на основе класса
+    queryset = Post.published.all() # queryset реализует конкретно-прикладной набор запросов
+    context_object_name = 'posts' # используется для результатов запроса, если не указано имя контекстного объекта
+                                  # context_object_name = <имя здесь>, то по умлчанию используется переменная object_list
+    paginate_by = 3 # задается постраничная разбивка результатов с возвратом трех объектов на страницу
+    template_name = 'blog/post/list.html' #прикладной шаблон используется для прорисовки страницы шаблоном template_name
+                                          #если шаблон не задан, то по умолчанию ListView будет использовать blog/post_list.html
 
 def post_list(request): #представление извлечь все посты со статусом PUBLISHED
     post_list = Post.published.all()
@@ -15,7 +26,7 @@ def post_list(request): #представление извлечь все пос
     except EmptyPage:
         # Если номер страницы находится вне диапазона то выдать последнюю страницу
         posts = paginator.page(paginator.num_pages)
-    return render(request, 'blog/post/list.html', {'posts': posts})
+    return render(request, 'blog/post/list.html', {'posts': posts})# адрес расположения данного тимплейта
 
 
 def post_detail(request, year, month, day, post):#извлекаем пост с заданным cлагом и датой публикации
