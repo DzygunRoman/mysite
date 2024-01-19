@@ -68,10 +68,15 @@ def post_detail(request, year, month, day, post):  # извлекаем пост
                              publish__month=month,
                              publish__day=day
                              )
+    comments = post.comments.filter(active=True) #Список активных комментариев к этому посту
+    form = CommentForm() #Форма для комментирования пользователями
+
 
     return render(request,
                   'blog/post/detail.html',
-                  {'post': post})  # прорисовка извлеченного поста с использованием шаблона
+                  {'post': post,
+                   'comments': comments,
+                   'form': form})  # прорисовка извлеченного поста с использованием шаблона
 
 
 @require_POST
