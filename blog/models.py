@@ -45,3 +45,23 @@ class Post(models.Model):
                              self.publish.month,
                              self.publish.day,
                              self.slug])
+
+
+class Comments(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')#связь комментариев с одним постом
+                                                            #related_name для связи от объекта назад к нему
+    name = models.CharField(max_length=80)
+    email = models.EmailField()
+    body = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)#дата и время создания комментария
+    updated = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)#статус комментариев для управления комментариями через админ-панель
+
+    class Meta:
+        ordering = ['created']#сортирует комментарии в хронологическом порядке
+        indexes = [
+            models.Index(fields=['created']),#индексирует поля created в возрастающем порядке
+        ]
+
+    def __str__(self):
+        return f'Comment by {self.name} on {self.post}'
