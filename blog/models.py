@@ -48,16 +48,18 @@ class Post(models.Model):
 
 
 class Comments(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')#связь комментариев с одним постом
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', verbose_name='Пост')#связь комментариев с одним постом
                                                             #related_name для связи от объекта назад к нему
-    name = models.CharField(max_length=80)
-    email = models.EmailField()
-    body = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)#дата и время создания комментария
-    updated = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=80, verbose_name='Имя автора поста')
+    email = models.EmailField(verbose_name='Электронная почта')
+    body = models.TextField(verbose_name='Содержимое поста')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания ')#дата и время создания комментария
+    updated = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
     active = models.BooleanField(default=True)#статус комментариев для управления комментариями через админ-панель
 
     class Meta:
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
         ordering = ['created']#сортирует комментарии в хронологическом порядке
         indexes = [
             models.Index(fields=['created']),#индексирует поля created в возрастающем порядке
