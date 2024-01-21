@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 
 class PublishedManager(models.Manager):  # менеджер для извлечения постов используя Post.published.all()
@@ -26,6 +27,7 @@ class Post(models.Model):
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)  # поле статус\
     objects = models.Manager()  # менеджер применямый по умолчанию
     published = PublishedManager()  # конкретно-прикладной менеджер
+    tags = TaggableManager() # Позволит извлекать доавлять и удалять теги из объектов Post
 
     class Meta:
         verbose_name = "Женщина"  # замена в админ-панели категории блога
