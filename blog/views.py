@@ -5,11 +5,12 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .forms import EmailPostForm, CommentForm
 from django.views.decorators.http import require_POST
+from taggit.models import Tag
 
 
 def post_share(request, post_id):
     # извлечь пост по id
-    post = get_object_or_404(Post, id=post_id, \
+    post = get_object_or_404(Post, id=post_id,
                              status=Post.Status.PUBLISHED)  # функция сокращенного доступа
 
     sent = False
@@ -44,8 +45,12 @@ class PostListViews(ListView):
     # если шаблон не задан, то по умолчанию ListView будет использовать blog/post_list.html
 
 
-def post_list(request):  # представление извлечь все посты со статусом PUBLISHED
+def post_list(request, tag_slug=None):  # представление извлечь все посты со статусом PUBLISHED
     post_list = Post.published.all()
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        post_list = post_list.filter(tags__in=[tag])
     # Постраничная разбивка с 3 постами на страницу
     paginator = Paginator(post_list, 3)  # создаем экземпляр класса с числом объектов возвращаемых на страницу
     page_number = request.GET.get('page', 1)  # извлекаем номер страницы и сохраняем в page_number
@@ -57,7 +62,7 @@ def post_list(request):  # представление извлечь все по
     except EmptyPage:
         # Если номер страницы находится вне диапазона то выдать последнюю страницу
         posts = paginator.page(paginator.num_pages)
-    return render(request, 'blog/post/list.html', {'posts': posts})  # адрес расположения данного тимплейта
+    return render(request, 'blog/post/list.html', {'posts': posts, 'tag': tag})  # адрес расположения данного тимплейта
 
 
 def post_detail(request, year, month, day, post):  # извлекаем пост с заданным cлагом и датой публикации
