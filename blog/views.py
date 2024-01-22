@@ -21,7 +21,7 @@ def post_share(request, post_id):
             # поля формы успешно прошли валидацию
             cd = form.cleaned_data  # извлечение данных из формы
             post_url = request.build_absolute_uri(post.get_absolute_url())  # отправить электронное письмо
-            subject = f"{cd['Имя отправителя']} рекомендовал Вам прочитать " \
+            subject = f"{cd['name']} рекомендовал Вам прочитать " \
                       f"{post.title}"
             message = f"Read {post.title} at {post_url}\n\n" \
                       f"{cd['name']}\'s comments: {cd['comments']}"
