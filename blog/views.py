@@ -3,10 +3,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comments
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
-from .forms import EmailPostForm, CommentForm
+from .forms import EmailPostForm, CommentForm, SearchForm
 from django.views.decorators.http import require_POST
 from taggit.models import Tag
 from django.db.models import Count
+from django.contrib.postgres.search import SearchVector
 
 def post_share(request, post_id):
     # извлечь пост по id
@@ -103,3 +104,17 @@ def post_comment(request, post_id):
     return render(request, 'blog/post/comment.html', {'post': post,
                                                       'form': form,
                                                       'comment': comment})
+
+
+def post_search(request):
+    form = SearchForm()#создается экземпляр формы
+    query = None
+    results = []
+
+    if 'query' in request.GET: #для того чтобы форма была передана на обработку в словаре request.GET отыскивается параметр query
+        form = SearchForm(request.GET) #создается экземпляр формы используя переданные данные в запросе GET
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Post.published.annotate(search=SearchVector('title', 'body'),).filter(search=query) #выполняется поиск опубликованных постов по полям title body
+
+    return render(request, 'blog/post/search.html', {'form': form, 'query': query, 'results': results})
