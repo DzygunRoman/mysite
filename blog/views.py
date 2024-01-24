@@ -7,7 +7,8 @@ from .forms import EmailPostForm, CommentForm, SearchForm
 from django.views.decorators.http import require_POST
 from taggit.models import Tag
 from django.db.models import Count
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
+
 
 def post_share(request, post_id):
     # извлечь пост по id
@@ -74,14 +75,14 @@ def post_detail(request, year, month, day, post):  # извлекаем пост
                              publish__month=month,
                              publish__day=day
                              )
-    comments = post.comments.filter(active=True) #Список активных комментариев к этому посту
-    form = CommentForm() #Форма для комментирования пользователями
+    comments = post.comments.filter(active=True)  # Список активных комментариев к этому посту
+    form = CommentForm()  # Форма для комментирования пользователями
 
     post_tags_ids = post.tags.values_list('id', flat=True)
-    similar_posts = Post.published.filter(tags__in=post_tags_ids)\
-                                  .exclude(id=post.id)
-    similar_posts = similar_posts.annotate(same_tags=Count('tags'))\
-                                 .order_by('-same_tags', '-publish')[:4]
+    similar_posts = Post.published.filter(tags__in=post_tags_ids) \
+        .exclude(id=post.id)
+    similar_posts = similar_posts.annotate(same_tags=Count('tags')) \
+                        .order_by('-same_tags', '-publish')[:4]
 
     return render(request,
                   'blog/post/detail.html',
@@ -94,7 +95,7 @@ def post_detail(request, year, month, day, post):  # извлекаем пост
 @require_POST
 def post_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
-    comment = None #переменная для хранения комментария
+    comment = None  # переменная для хранения комментария
     # комментарий был отправлен
     form = CommentForm(data=request.POST)
     if form.is_valid():
@@ -107,14 +108,16 @@ def post_comment(request, post_id):
 
 
 def post_search(request):
-    form = SearchForm()#создается экземпляр формы
+    form = SearchForm()  # создается экземпляр формы
     query = None
     results = []
 
-    if 'query' in request.GET: #для того чтобы форма была передана на обработку в словаре request.GET отыскивается параметр query
-        form = SearchForm(request.GET) #создается экземпляр формы используя переданные данные в запросе GET
+    if 'query' in request.GET:  # для того чтобы форма была передана на обработку в словаре request.GET отыскивается параметр query
+        form = SearchForm(request.GET)  # создается экземпляр формы используя переданные данные в запросе GET
         if form.is_valid():
             query = form.cleaned_data['query']
-            results = Post.published.annotate(search=SearchVector('title', 'body'),).filter(search=query) #выполняется поиск опубликованных постов по полям title body
+            search_vector = SearchVector('title', weight='A') + SearchVector('body', weight='B')
+            search_query = SearchQuery(query, config='russian') #фильтруем результат поиска
+            results = (Post.published.annotate(similarity=TrigramSimilarity('title', query),).filter(similarity__gt=0.1).order_by('-similarity'))  # выполняется поиск опубликованных постов по полям title body
 
     return render(request, 'blog/post/search.html', {'form': form, 'query': query, 'results': results})
