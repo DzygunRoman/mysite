@@ -8,24 +8,27 @@ class Post(models.Model):
         DRAFT = 'DF', 'Draft'
         PUBLISHED = 'PB', 'Published'
 
-    title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250)
-    author = models.ForeignKey(User,
-                               on_delete=models.CASCADE,
-                               related_name='blog_posts')
-    body = models.TextField()
-    publish = models.DateTimeField(default=timezone.now())
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    title = models.CharField(max_length=250, verbose_name='Заголовок')
+    slug = models.SlugField(max_length=250, verbose_name='Слаг')
+    author = models.ForeignKey(User, verbose_name='Автор',  # связь данной модели с встроенной моделью User - многие к одному
+                               on_delete=models.CASCADE,  # вариант удаления связанных сущностей
+                               related_name='blog_posts')  # обратная связь от User к Post(user.blog_posts)
+    body = models.TextField(verbose_name='Текст')
+    publish = models.DateTimeField(default=timezone.now, verbose_name='Время публикации')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
+    updated = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
     status = models.CharField(max_length=2,
                               choices=Status.choices,
-                              default=Status.DRAFT)
+                              default=Status.DRAFT,
+                              verbose_name='Статус')
 
     class Meta:  # это класс определяет метаданные модели
         ordering = ['-publish']  # предустановка сортировки по полю publish по умолчанию
         indexes = [
             models.Index(fields=['-publish']),  # индекс повысит скорость запросов фильтрующих по данному полю
         ]
+        verbose_name = 'Пост'  #  меняю отображение слова пост в амин-панели на русский
+        verbose_name_plural = 'Посты'  # множественное число
 
     def __str__(self):
         return self.title
