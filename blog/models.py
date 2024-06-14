@@ -10,5 +10,11 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    class Meta:  # это класс определяет метаданные модели
+        ordering = ['-publish']  # предустановка сортировки по полю publish по умолчанию
+        indexes = [
+            models.Index(fields=['-publish']), # индекс повысит скорость запросов фильтрующих по данному полю
+        ]
+
     def __str__(self):
         return self.title
