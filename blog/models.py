@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Post(models.Model):
@@ -9,6 +10,9 @@ class Post(models.Model):
 
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
+    author = models.ForeignKey(User,
+                               on_delete=models.CASCADE,
+                               related_name='blog_posts')
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now())
     created = models.DateTimeField(auto_now_add=True)
@@ -20,7 +24,7 @@ class Post(models.Model):
     class Meta:  # это класс определяет метаданные модели
         ordering = ['-publish']  # предустановка сортировки по полю publish по умолчанию
         indexes = [
-            models.Index(fields=['-publish']), # индекс повысит скорость запросов фильтрующих по данному полю
+            models.Index(fields=['-publish']),  # индекс повысит скорость запросов фильтрующих по данному полю
         ]
 
     def __str__(self):
