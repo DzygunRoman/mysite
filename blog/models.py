@@ -3,6 +3,11 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 
+class PublishedManager(models.Manager):
+    def get_queryset(self): #  метод возвращает отфильтрованные посты
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED)
+
+
 class Post(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DF', 'Draft'
@@ -10,7 +15,8 @@ class Post(models.Model):
 
     title = models.CharField(max_length=250, verbose_name='Заголовок')
     slug = models.SlugField(max_length=250, verbose_name='Слаг')
-    author = models.ForeignKey(User, verbose_name='Автор',  # связь данной модели с встроенной моделью User - многие к одному
+    author = models.ForeignKey(User, verbose_name='Автор',
+                               # связь данной модели с встроенной моделью User - многие к одному
                                on_delete=models.CASCADE,  # вариант удаления связанных сущностей
                                related_name='blog_posts')  # обратная связь от User к Post(user.blog_posts)
     body = models.TextField(verbose_name='Текст')
@@ -21,6 +27,8 @@ class Post(models.Model):
                               choices=Status.choices,
                               default=Status.DRAFT,
                               verbose_name='Статус')
+    objects = models.Manager()  #  менеджер применяемый по умолчанию
+    published  = PublishedManager()  #  конкретно-прикладной менеджер
 
     class Meta:  # это класс определяет метаданные модели
         ordering = ['-publish']  # предустановка сортировки по полю publish по умолчанию
