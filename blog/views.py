@@ -8,6 +8,11 @@ def post_list(request):
     return render(request, 'blog/post/list.html', {'posts': posts})  # прорисовка шаблона
 
 
-def post_detail(request, id):  # извлекаю пост по id и в render отправляю в шаблон
-    post = get_object_or_404(Post, id=id, status=Post.Status.PUBLISHED)  # функция либо извлекает пост либо выдает исключение
+def post_detail(request, year, month, day, post):  # извлекаю пост по id и в render отправляю в шаблон
+    post = get_object_or_404(Post,
+                             status=Post.Status.PUBLISHED,
+                             slug=post,
+                             publish_year=year,
+                             publish_month=month,
+                             publis_day=day)  # функция либо извлекает пост либо выдает исключение
     return render(request, 'blog/post/detail.html', {'post': post})

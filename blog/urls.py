@@ -6,5 +6,5 @@ app_name = 'blog' # упорядочиваем пути в соответств�
 
 urlpatterns = [
     path('', views.post_list, name='post_list'),  # путь для всех постов
-    path('<int:id>/', views.post_detail, name='post_detail'),  # путь для одного поста
+    path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name='post_detail'),  # путь для одного поста
 ]
