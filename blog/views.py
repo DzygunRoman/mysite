@@ -12,7 +12,7 @@ def post_detail(request, year, month, day, post):  # извлекаю пост �
     post = get_object_or_404(Post,
                              status=Post.Status.PUBLISHED,
                              slug=post,
-                             publish_year=year,
-                             publish_month=month,
-                             publis_day=day)  # функция либо извлекает пост либо выдает исключение
+                             publish__year=year,
+                             publish__month=month,
+                             publish__day=day)  # функция либо извлекает пост либо выдает исключение
     return render(request, 'blog/post/detail.html', {'post': post})
