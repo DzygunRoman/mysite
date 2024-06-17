@@ -15,7 +15,7 @@ class Post(models.Model):
         PUBLISHED = 'PB', 'Published'
 
     title = models.CharField(max_length=250, verbose_name='Заголовок')
-    slug = models.SlugField(max_length=250, verbose_name='Слаг')
+    slug = models.SlugField(max_length=250, verbose_name='Слаг', unique_for_date='publish') # слаг уникальный
     author = models.ForeignKey(User, verbose_name='Автор',
                                # связь данной модели с встроенной моделью User - многие к одному
                                on_delete=models.CASCADE,  # вариант удаления связанных сущностей
