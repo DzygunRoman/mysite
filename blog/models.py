@@ -1,10 +1,11 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 class PublishedManager(models.Manager):
-    def get_queryset(self): #  метод возвращает отфильтрованные посты
+    def get_queryset(self):  # метод возвращает отфильтрованные посты
         return super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
 
@@ -27,16 +28,19 @@ class Post(models.Model):
                               choices=Status.choices,
                               default=Status.DRAFT,
                               verbose_name='Статус')
-    objects = models.Manager()  #  менеджер применяемый по умолчанию
-    published  = PublishedManager()  #  конкретно-прикладной менеджер
+    objects = models.Manager()  # менеджер применяемый по умолчанию
+    published = PublishedManager()  # конкретно-прикладной менеджер
 
     class Meta:  # это класс определяет метаданные модели
         ordering = ['-publish']  # предустановка сортировки по полю publish по умолчанию
         indexes = [
             models.Index(fields=['-publish']),  # индекс повысит скорость запросов фильтрующих по данному полю
         ]
-        verbose_name = 'Пост'  #  меняю отображение слова пост в амин-панели на русский
+        verbose_name = 'Пост'  # меняю отображение слова пост в амин-панели на русский
         verbose_name_plural = 'Посты'  # множественное число
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('blog:post_detail', args=[self.id])  # динамически сформированный адрес параметром id
