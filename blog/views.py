@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Post
-from django.core.paginator import Paginator, EmptyPage, \
-    PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
+from .forms import EmailPostForm
 
 
 class PostListView(ListView):  # отображение списка постов реализованное на основе класса ListView
@@ -34,3 +34,14 @@ def post_detail(request, year, month, day, post):  # извлекаю пост �
                              publish__month=month,
                              publish__day=day)  # функция либо извлекает пост либо выдает исключение
     return render(request, 'blog/post/detail.html', {'post': post})
+
+
+def post_share(request, post_id):
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED) # извлечь пост по идентификатору id
+    if request.method == 'POST':
+        form = EmailPostForm(request.POST) # форма была передана на обработку
+        if form.is_valid(): #  поля формы успешно прошли валидацию
+            cd = form.cleaned_data # отправить электронное письмо
+    else:
+        form = EmailPostForm()
+    return render(request, 'blog/post/share.html', {'post': post, 'form': form})
