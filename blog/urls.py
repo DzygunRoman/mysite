@@ -8,5 +8,5 @@ urlpatterns = [
     # path('', views.post_list, name='post_list'),  # путь для всех постов
     path('', views.PostListView.as_view(), name='post_list'), # путь для всех посто на основе классов
     path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name='post_detail'),  # путь для одного поста
-    path('<int:post_id>/<share>', views.post_share, name='post_share'),
+    path('<int:post_id>/share/', views.post_share, name='post_share'),
 ]
