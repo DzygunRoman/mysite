@@ -38,10 +38,20 @@ def post_detail(request, year, month, day, post):  # извлекаю пост �
 
 def post_share(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED) # извлечь пост по идентификатору id
+
+    sent = False
+
     if request.method == 'POST':
         form = EmailPostForm(request.POST) # форма была передана на обработку
         if form.is_valid(): #  поля формы успешно прошли валидацию
             cd = form.cleaned_data # отправить электронное письмо # словарь полей формы и их значений
+            post_url = request.build_absolute_uri(post.get_absolute_url())
+            subject = f"{cd['name']} рекомендую вам прочитать " \
+                      f"{post.title}"
+            message = f"Прочитать {post.title} по ссылке {post_url}\n\n" \
+                      f"{cd['name']} комментарий: {cd['comments']}"
+            send_mail = (subject, message, 'dzygun-roman@mail.ru', [cd['to']])
+            sent = True
     else:
         form = EmailPostForm()
-    return render(request, 'blog/post/share.html', {'post': post, 'form': form})
+    return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
