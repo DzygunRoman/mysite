@@ -41,7 +41,7 @@ def post_share(request, post_id):
     if request.method == 'POST':
         form = EmailPostForm(request.POST) # форма была передана на обработку
         if form.is_valid(): #  поля формы успешно прошли валидацию
-            cd = form.cleaned_data # отправить электронное письмо
+            cd = form.cleaned_data # отправить электронное письмо # словарь полей формы и их значений
     else:
         form = EmailPostForm()
     return render(request, 'blog/post/share.html', {'post': post, 'form': form})
