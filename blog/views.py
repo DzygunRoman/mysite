@@ -35,13 +35,17 @@ def post_detail(request, year, month, day, post):  # извлекаю пост �
                              publish__year=year,
                              publish__month=month,
                              publish__day=day)  # функция либо извлекает пост либо выдает исключение
-    return render(request, 'blog/post/detail.html', {'post': post})
+    comments = post.comments.filter(active=True) # список активных комментариев к этому посту
+    form = CommentForm()
+
+    return render(request, 'blog/post/detail.html', {'post': post,
+                                                     'comments': comments,
+                                                     'form': form})
 
 
 def post_share(request, post_id):
     # Retrieve post by id
-    post = get_object_or_404(Post, id=post_id, \
-                             status=Post.Status.PUBLISHED)
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
     sent = False
 
     if request.method == 'POST':
@@ -55,7 +59,7 @@ def post_share(request, post_id):
                       f"{post.title}"
             message = f"Read {post.title} at {post_url}\n\n" \
                       f"{cd['name']}\'s comments: {cd['comments']}"
-            send_mail(subject, message, 'your_account@gmail.com',
+            send_mail(subject, message, 'dzygun-roman@mail.ru',
                       [cd['to']])
             sent = True
 
