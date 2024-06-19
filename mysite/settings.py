@@ -35,8 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog.apps.BlogConfig',
-    # добавили наше приложение длятого чтобы Dgango мог отслеживать приложение и создавать таблицы в БД
+    'blog.apps.BlogConfig',    # добавили наше приложение длятого чтобы Dgango мог отслеживать приложение и создавать таблицы в БД
+    'taggit',
 ]
 
 MIDDLEWARE = [
