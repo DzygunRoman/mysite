@@ -5,6 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .forms import EmailPostForm, CommentForm
 from django.views.decorators.http import require_POST
+from taggit.models import Tag
 
 
 class PostListView(ListView):  # отображение списка постов реализованное на основе класса ListView
@@ -14,8 +15,12 @@ class PostListView(ListView):  # отображение списка посто�
     template_name = 'blog/post/list.html'
 
 
-def post_list(request):
+def post_list(request,tag_slug=None):
     post_list = Post.published.all()  # извлекаются все посты при помощи ранее созданного менеджера
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        post_list = post_list.filter(tags__in=[tag])
     paginator = Paginator(post_list, 3)  # постраничная разбивка
     page_number = request.GET.get('page', 1)
     try:
@@ -25,7 +30,7 @@ def post_list(request):
     except EmptyPage:
         posts = paginator.page(
             paginator.num_pages)  # если номер страницы находится в не диапазона то показать последнюю
-    return render(request, 'blog/post/list.html', {'posts': posts})  # прорисовка шаблона
+    return render(request, 'blog/post/list.html', {'posts': posts, 'tag': tag})  # прорисовка шаблона
 
 
 def post_detail(request, year, month, day, post):  # извлекаю пост по id и в render отправляю в шаблон
